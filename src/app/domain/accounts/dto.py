@@ -12,3 +12,9 @@ class AccountCreate(BaseModel):
 
 class Account(AccountCreate):
     uid: UUID4
+
+class UpdateAccount(Account):
+    pass
+
+class DeleteAccount(Account):
+    pass
