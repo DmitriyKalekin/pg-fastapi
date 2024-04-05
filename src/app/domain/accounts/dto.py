@@ -13,6 +13,10 @@ class AccountCreate(BaseModel):
 class Account(AccountCreate):
     uid: UUID4
 
+class AccountList(BaseModel):
+    count: int
+    items: list[Account] = []
+
 class UpdateAccount(Account):
     pass
 

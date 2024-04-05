@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI, Path
 from fastapi.responses import JSONResponse
 from .deps import AAccountUC, EmailBusyException
-from .dto import AccountCreate, Account, Error
+from .dto import AccountCreate, Account, Error, AccountList
 
 prefix = "/api/v1/accounts"
 router = APIRouter(prefix=prefix, tags=["accounts"])
@@ -16,10 +16,10 @@ async def create_account(uc: AAccountUC, req: AccountCreate):
     return acc
 
 
-@router.get("/")
+@router.get("/", response_model=AccountList)
 async def get_all_accounts(uc: AAccountUC):
-    acc: Account = await uc.get_all_account()
-    return acc
+    acclist: AccountList = await uc.get_all_account()
+    return acclist
     
 
 #
