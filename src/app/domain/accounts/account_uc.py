@@ -1,3 +1,4 @@
+from uuid import UUID
 from .dto import AccountCreate, Account, UpdateAccount, DeleteAccount, AccountList
 from .account_irep import IRepAccount
 
@@ -24,8 +25,9 @@ class AccountUseCase:
         return AccountList(count=len(accounts), items=items)
         
     
-    # async def get_account(self, uid):
-    #     print("created")
+    async def get_account(self, uid: UUID) -> Account:
+        account = await self._repo.get_account(uid)
+        return account
     #
     # async def delete_account(self, uid):
     #     print("created")

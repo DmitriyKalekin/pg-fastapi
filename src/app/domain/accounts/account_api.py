@@ -20,13 +20,12 @@ async def create_account(uc: AAccountUC, req: AccountCreate):
 async def get_all_accounts(uc: AAccountUC):
     acclist: AccountList = await uc.get_all_account()
     return acclist
-    
 
-#
-# @router.get("/{uid}")
-# async def get_account(uid: str = Path(...)):
-#     return {"uid": "123"}
-#
+@router.get("/{uid}", response_model=Account, responses={404: {"model": Error}})
+async def get_account(uc: AAccountUC, uid: str = Path(...)):
+    acc: Account = await uc.get_account(uid)
+    return acc
+
 #
 # @router.delete("/{uid}")
 # async def delete_account(uid: str = Path(...)):

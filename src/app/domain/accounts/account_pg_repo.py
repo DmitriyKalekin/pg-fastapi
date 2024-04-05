@@ -53,5 +53,17 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             accounts = await conn.fetch(q)
             return accounts
             
+    async def get_account(self, uid: UUID) -> dict:
+        async with self.pool as p, p.acquire() as cn:
+            conn: asyncpg.Connection = cn
+            q = f"""
+                SELECT * FROM accounts WHERE uid=($1)
+            """
 
-        
+            try:
+                account = await conn.fetch(q, uid)
+            except: # TODO: Finish this. 
+                pass
+
+
+            return account 
