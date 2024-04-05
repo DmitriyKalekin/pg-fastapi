@@ -1,4 +1,4 @@
-from .dto import AccountCreate, Account
+from .dto import AccountCreate, Account, UpdateAccount, DeleteAccount
 from .account_irep import IRepAccount
 
 
@@ -18,9 +18,11 @@ class AccountUseCase:
             raise EmailBusyException("email busy")
         return Account(uid=uid, **req_dict)
 
-    # async def get_all_account(self):
-    #     print("created")
-    #
+    async def get_all_account(self) -> Account:
+        account = await self._repo.get_all_account()
+        return account
+        
+    
     # async def get_account(self, uid):
     #     print("created")
     #

@@ -43,3 +43,15 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             except asyncpg.exceptions.UniqueViolationError:
                 raise KeyError("email busy")
             return uid
+
+    async def get_all_account(self) -> dict:
+        async with self.pool as p, p.acquire() as cn:
+            conn: asyncpg.Connection = cn
+            q = """
+                SELECT * FROM accounts
+            """
+            accounts = await conn.fetch(q)
+            return accounts
+            
+
+        

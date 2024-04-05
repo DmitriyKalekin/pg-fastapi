@@ -16,13 +16,12 @@ async def create_account(uc: AAccountUC, req: AccountCreate):
     return acc
 
 
-# @router.get("/")
-# async def get_all_accounts():
-#     return [
-#         {"uid": "123"},
-#         {"uid": "234"},
-#     ]
-#
+@router.get("/")
+async def get_all_accounts(uc: AAccountUC):
+    acc: Account = await uc.get_all_account()
+    return acc
+    
+
 #
 # @router.get("/{uid}")
 # async def get_account(uid: str = Path(...)):
