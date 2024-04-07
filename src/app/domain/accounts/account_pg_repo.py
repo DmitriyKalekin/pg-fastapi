@@ -61,9 +61,7 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             """
 
             try:
-                account = await conn.fetch(q, uid)
-            except: # TODO: Finish this. 
-                pass
-
-
+                account = await conn.fetchrow(q, uid)
+            except asyncpg.exceptions.DataError: 
+                raise KeyError("invalid uid")
             return account 

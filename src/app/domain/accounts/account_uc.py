@@ -26,8 +26,11 @@ class AccountUseCase:
         
     
     async def get_account(self, uid: UUID) -> Account:
-        account = await self._repo.get_account(uid)
-        return account
+        try:
+            account = await self._repo.get_account(uid)
+        except KeyError:
+            raise KeyError("invalid uid")
+        return Account(**account)
     #
     # async def delete_account(self, uid):
     #     print("created")
