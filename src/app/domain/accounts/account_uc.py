@@ -31,9 +31,13 @@ class AccountUseCase:
         except KeyError:
             raise KeyError("invalid uid")
         return Account(**account)
-    #
-    # async def delete_account(self, uid):
-    #     print("created")
+    
+    async def delete_account(self, uid: UUID) -> Account:
+        try:
+            account = await self._repo.delete_account(uid)
+        except KeyError:
+            raise KeyError("invalid uid")
+        return account
     #
     # async def update_account(self, uid):
     #     print("created")

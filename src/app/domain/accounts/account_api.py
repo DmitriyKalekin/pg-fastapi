@@ -21,7 +21,7 @@ async def get_all_accounts(uc: AAccountUC):
     acclist: AccountList = await uc.get_all_account()
     return acclist
 
-@router.get("/{uid}", responses={404: {"model": Error}})
+@router.get("/{uid}", response_model=Account, responses={404: {"model": Error}})
 async def get_account(uc: AAccountUC, uid: str = Path(...)):
     try:
         acc: Account = await uc.get_account(uid)
@@ -29,11 +29,14 @@ async def get_account(uc: AAccountUC, uid: str = Path(...)):
         return JSONResponse({"error": str(e)}, status_code=404)
     return acc
 
-#
-# @router.delete("/{uid}")
-# async def delete_account(uid: str = Path(...)):
-#     return {"uid": "123"}
-#
+@router.delete("/{uid}", responses={404: {"model": Error}})
+async def delete_account(uc: AAccountUC, uid: str = Path(...)):
+    try: 
+        acc: Account = await uc.delete_account(uid)
+    except KeyError as e:
+        return JSONResponse({"error": str(e)}, status_code=404)
+    return {"status": "OK"} if acc == True else {"status": "Doesn't exist"}
+
 #
 # @router.patch("/{uid}")
 # async def patch_account(uid: str = Path(...)):
