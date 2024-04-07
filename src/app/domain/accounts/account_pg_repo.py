@@ -23,10 +23,7 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
     async def pool(self):
         if not self._pool:
             self._pool = await asyncpg.create_pool(
-                self.dsn,
-                min_size=1,
-                max_size=2,
-                max_inactive_connection_lifetime=500.0
+                self.dsn, min_size=1, max_size=2, max_inactive_connection_lifetime=500.0
             )
         yield self._pool
 
@@ -52,7 +49,7 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             """
             accounts = await conn.fetch(q)
             return accounts
-            
+
     async def get_account(self, uid: UUID) -> dict:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
@@ -62,9 +59,9 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
 
             try:
                 account = await conn.fetchrow(q, uid)
-            except asyncpg.exceptions.DataError: 
+            except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            return account 
+            return account
 
     async def delete_account(self, uid: UUID) -> dict:
         async with self.pool as p, p.acquire() as cn:
@@ -73,7 +70,7 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 DELETE FROM accounts WHERE uid=($1)
             """
 
-            try:   
+            try:
                 res = await conn.execute(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")

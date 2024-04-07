@@ -23,15 +23,14 @@ class AccountUseCase:
         accounts = await self._repo.get_all_account()
         items = [Account(**el) for el in accounts]
         return AccountList(count=len(accounts), items=items)
-        
-    
+
     async def get_account(self, uid: UUID) -> Account:
         try:
             account = await self._repo.get_account(uid)
         except KeyError:
             raise KeyError("invalid uid")
         return Account(**account)
-    
+
     async def delete_account(self, uid: UUID) -> bool:
         try:
             res = await self._repo.delete_account(uid)
@@ -41,7 +40,7 @@ class AccountUseCase:
 
     async def patch_account(self, uid: UUID, req: UpdateAccount) -> bool:
         req_dict = req.model_dump()
-        
+
         try:
             res = await self._repo.update_account(uid, req_dict)
         except KeyError:
