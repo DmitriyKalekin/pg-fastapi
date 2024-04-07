@@ -17,7 +17,7 @@ class AccountList(BaseModel):
     count: int
     items: list[Account] = []
 
-class UpdateAccount(Account):
+class UpdateAccount(AccountCreate):
     pass
 
 class DeleteAccount(Account):

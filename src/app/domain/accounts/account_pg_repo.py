@@ -74,7 +74,22 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             """
 
             try:   
-                account = await conn.execute(q, uid)
+                res = await conn.execute(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            return account
+            return res
+
+    async def update_account(self, uid: UUID, acc: dict) -> dict:
+        async with self.pool as p, p.acquire() as cn:
+            conn: asyncpg.Connection = cn
+            q = f"""
+                UPDATE accounts
+                SET email=($2), name=($3)
+                WHERE uid=($1)
+            """
+
+            try:
+                res = await conn.execute(q, uid, acc["email"], acc["name"])
+            except asyncpg.exceptions.DataError:
+                raise KeyError("invalid uid")
+            return res
