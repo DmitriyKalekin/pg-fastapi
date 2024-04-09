@@ -1,3 +1,4 @@
+from uuid import UUID
 import pytest
 from app.domain.accounts.deps import create_account_uc, AccountUseCase, EmailBusyException
 from app.domain.accounts.account_irep import IRepAccount
@@ -9,10 +10,32 @@ class MockRepo(IRepAccount):
     async def create_account(self, _: dict):
         return "56986558-57f9-4117-a26f-05fa0cffe8ee"
 
+    async def get_all_account(self):
+        pass # TODO
 
+    async def get_account(self, _: str):
+        pass # TODO
+
+    async def delete_account(self, _: str):
+        pass # TODO
+
+    async def update_account(self, _: UUID, req: dict):
+        pass # TODO
 class MockRepoError(IRepAccount):
     async def create_account(self, _: dict):
         raise KeyError("email busy")
+    
+    async def get_all_account(self):
+        pass # TODO
+
+    async def get_account(self, _: str):
+        pass # TODO
+
+    async def delete_account(self, _: str):
+        pass # TODO
+
+    async def update_account(self, _: UUID, req: dict):
+        pass # TODO
 
 
 async def create_account_uc_override__success():
