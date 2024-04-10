@@ -11,31 +11,41 @@ class MockRepo(IRepAccount):
         return "56986558-57f9-4117-a26f-05fa0cffe8ee"
 
     async def get_all_account(self):
-        pass # TODO
-
+        return {
+            "count": 1,
+            "items": [
+                {
+                    "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", 
+                    "email": "aaa@dot.com", 
+                    "name": "my_name"
+                },
+            ]
+        }
     async def get_account(self, _: str):
-        pass # TODO
+        return {
+            "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", 
+            "email": "aaa@dot.com", 
+            "name": "my_name"
+        }
 
     async def delete_account(self, _: str):
-        pass # TODO
+        return True
 
     async def update_account(self, _: UUID, req: dict):
-        pass # TODO
+        return "UPDATE 1"
+
 class MockRepoError(IRepAccount):
     async def create_account(self, _: dict):
         raise KeyError("email busy")
-    
-    async def get_all_account(self):
-        pass # TODO
 
     async def get_account(self, _: str):
-        pass # TODO
+        raise KeyError("invalid uid")
 
     async def delete_account(self, _: str):
-        pass # TODO
+        raise KeyError("invalid uid")
 
     async def update_account(self, _: UUID, req: dict):
-        pass # TODO
+        raise KeyError("invalid uid")
 
 
 async def create_account_uc_override__success():
@@ -58,6 +68,20 @@ async def test_create_account__success(testclient, api_app):
         **req
     }
 
+# async def test_get_account__success(testclient, api_app):
+#     api_app.dependency_overrides[create_account_uc] = create_account_uc_override__success
+#     res = await testclient.get("/api/v1/accounts/")
+#     req = {
+#         "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+#         "email": "aaa@dot.com",
+#         "name": "my_name"
+#     }
+#     assert res.status_code == 200
+#     assert res.json() == {
+#         "count": len(req),
+#         "items": [req]
+#     }
+
 
 async def test_create_account__email_busy(testclient, api_app):
     api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
@@ -66,4 +90,42 @@ async def test_create_account__email_busy(testclient, api_app):
     assert res.status_code == 400
     assert res.json() == {
         "error": "email busy"
+    }
+
+async def test_get_account__invalid_uid(testclient, api_app):
+    api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
+    uid = "1234124"
+    res = await testclient.get(f"/api/v1/accounts/{uid}")
+    assert res.status_code == 404
+    assert res.json() == {
+        "error": "'invalid uid'"
+    }
+
+async def test_delete_account__invalid_uid(testclient, api_app):
+    api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
+    uid = "1234124"
+    res = await testclient.delete(f"/api/v1/accounts/{uid}")
+    assert res.status_code == 404
+    assert res.json() == {
+        "error": "'invalid uid'"
+    }
+
+async def test_putch_account__invalid_uid(testclient, api_app):
+    api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
+    uid = "1234124"
+    req = {"email": "aaa@dot.com", "name": "my_name"}
+    res = await testclient.patch(f"/api/v1/accounts/{uid}", json=req)
+    assert res.status_code == 404
+    assert res.json() == {
+        "error": "'invalid uid'"
+    }
+
+async def test_put_account__invalid_uid(testclient, api_app):
+    api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
+    uid = "1234124"
+    req = {"email": "aaa@dot.com", "name": "my_name"}
+    res = await testclient.put(f"/api/v1/accounts/{uid}?email={req['email']}&name={req['name']}")
+    assert res.status_code == 404
+    assert res.json() == {
+        "error": "'invalid uid'"
     }
