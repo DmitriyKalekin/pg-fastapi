@@ -6,13 +6,18 @@ from .dto import ProjectCreate, Project, DeleteProject, ProjectList, UpdateProje
 prefix = "/api/v1/projects"
 router = APIRouter(prefix=prefix, tags=["projects"])
 
-# @router.post("/", response_model=ProjectCreate, status_code=201)
-# async def create_project(project: ProjectCreate = Body(...)):
-#     return await AProjectUC.create_project(project)
+@router.post("/", response_model=ProjectCreate, status_code=200)
+async def create_project(uc: AProjectUC, req: ProjectCreate = Body(...)):
+    try:
+        res = await uc.create_project(req)
+    except KeyError:
+        return JSONResponse(status_code=400, content=Error(message="key busy"))
+    return res
 
-# @router.get("/", response_model=ProjectList, status_code=200)
-# async def get_projects():
-#     return await AProjectUC.get_projects()
+@router.get("/", response_model=ProjectList, status_code=200)
+async def get_all_projects(uc: AProjectUC):
+    prjlist: ProjectList = await uc.get_all_project()
+    return prjlist
 
 # @router.get("/{project_id}", response_model=Project, status_code=200)
 # async def get_project(project_id: int):

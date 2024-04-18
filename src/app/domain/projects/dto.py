@@ -5,9 +5,11 @@ class Error(BaseModel):
 
 class ProjectCreate(BaseModel):
     name: str
+    manager_id: UUID4
+    status_id: int
 
 class Project(ProjectCreate):
-    uid: UUID4
+    project_key: str
 
 class ProjectList(BaseModel):
     count: int
