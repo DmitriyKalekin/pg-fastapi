@@ -57,11 +57,7 @@ CREATE TABLE projects
 
     constraint fk_manager_account
         foreign key (manager_id)
-            REFERENCES accounts (uid),
-            
-    constraint fk_status_project
-        foreign key (status_id)
-            REFERENCES lib_status (id)
+            REFERENCES accounts (uid)
 );
 --
 CREATE INDEX ON projects (created_at);
