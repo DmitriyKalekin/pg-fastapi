@@ -58,6 +58,21 @@ CREATE TABLE projects
     constraint fk_manager_account
         foreign key (manager_id)
             REFERENCES accounts (uid)
+            
+    constraint fk_status_project
+        foreign key (status_id)
+            REFERENCES lib_status (name)
+
+    --
+    CREATE INDEX ON projects (created_at);
+    --
+    COMMENT ON TABLE projects is 'Проекты';
+    COMMENT ON COLUMN projects.project_key is 'Ключ проекта';
+    COMMENT ON COLUMN projects.name is 'Название проекта';
+    COMMENT ON COLUMN projects.manager_id is 'Привязанный аккаунт';
+    COMMENT ON COLUMN projects.status_id is 'Статус';
+    COMMENT ON COLUMN projects.created_at is 'Создание по UTC';
+
 
 );
 
