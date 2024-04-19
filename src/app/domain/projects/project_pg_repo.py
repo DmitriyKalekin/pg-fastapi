@@ -26,7 +26,7 @@ class ProjectPgRepo(IRepProject): #pragma: no cover
             )
         yield self._pool                   
 
-    async def create_project(self, project_key: str, req: dict) -> dict: 
+    async def create_project(self, req: dict) -> dict: 
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -34,7 +34,10 @@ class ProjectPgRepo(IRepProject): #pragma: no cover
                 VALUES ($1, $2, $3, $4)
                 RETURNING project_key
             """
-            res = await conn.fetchval(q, project_key, req["name"], req["manager_id"], req["status_id"])
+            try:
+                res = await conn.fetchval(q, f"{req["name"]}-1", req["name"], req["manager_id"], req["status_id"])
+            except asyncpg.exceptions.UniqueViolationError:
+                raise KeyError("key busy")
             return res
 
     async def get_all_project(self) -> dict: 
@@ -47,7 +50,7 @@ class ProjectPgRepo(IRepProject): #pragma: no cover
             projects = await conn.fetch(q)
             return projects
 
-    async def get_project(self, req: dict) -> dict: 
+    async def get_project(self, project_key: str) -> dict: 
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -55,27 +58,27 @@ class ProjectPgRepo(IRepProject): #pragma: no cover
             """
 
             try:
-                project = await conn.fetchrow(q, req["project_key"])
+                project = await conn.fetchrow(q, project_key)
             except asyncpg.exceptions.DataError:
-                raise KeyError("invalid key")
+                raise KeyError("key not found")
             return project
 
-    async def update_project(self, req: dict) -> dict: 
+    async def update_project(self, project_key: str, req: dict) -> dict: 
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
                 UPDATE projects
-                SET name=($2), manager_id=($3)
+                SET name=($2), manager_id=($3), status_id=($4)
                 WHERE project_key=($1)
             """
 
             try:
-                res = await conn.execute(q, req["project_key"], req["name"], req["manager_id"])
+                res = await conn.execute(q, project_key, req["name"], req["manager_id"], req["status_id"])
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid key")
             return res
 
-    async def delete_project(self, req: dict) -> bool: 
+    async def delete_project(self, project_key: str) -> bool: 
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
@@ -83,7 +86,7 @@ class ProjectPgRepo(IRepProject): #pragma: no cover
             """
 
             try:
-                res = await conn.execute(q, req["project_key"])
+                res = await conn.execute(q, project_key)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid key")
             return res

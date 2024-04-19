@@ -8,20 +8,45 @@ class ProjectUseCase:
 
     async def create_project(self, req: ProjectCreate) -> Project: 
         req_dict = req.model_dump()
-        project_key = f"{req_dict["name"]}-1"
-        # try:
-        res = await self._repo.create_project(project_key ,req_dict)
-        # except KeyError:
-        #     raise KeyError("key busy")
-        return res
+        try:
+            res = await self._repo.create_project(req_dict)
+        except KeyError:
+            raise KeyError("key busy")
+        return Project(project_key=res, **req_dict)
 
     async def get_all_project(self) -> ProjectList: 
         projects = await self._repo.get_all_project()
         items = [Project(**el) for el in projects]
         return ProjectList(count=len(projects), items=items)
 
-    async def get_project(self, project_id: int) -> Project: pass
+    async def get_project(self, project_key: str) -> Project: 
+        try:
+            res = await self._repo.get_project(project_key)
+        except KeyError:
+            raise KeyError("key not found")
+        return Project(**res)
 
-    async def update_project(self, project: Project) -> UpdateProject: pass
+    async def patch_project(self, project_key: str, req: UpdateProject) -> bool:
+        req_dict = req.model_dump()
 
-    async def delete_project(self, project_id: int) -> DeleteProject: pass
+        try:
+            res = await self._repo.update_project(project_key, req_dict)
+        except KeyError:
+            raise KeyError("key not found")
+        return res
+    
+    async def put_project(self, project_key: str, req: dict) -> bool:
+        try:
+            res = await self._repo.update_project(project_key, req)
+        except KeyError:
+            raise KeyError("key not found")
+        return res
+
+
+
+    async def delete_project(self, project_key: str) -> bool: 
+        try:
+            res = await self._repo.delete_project(project_key)
+        except KeyError:
+            raise KeyError("key not found")
+        return res

@@ -6,7 +6,7 @@ class Error(BaseModel):
 class ProjectCreate(BaseModel):
     name: str
     manager_id: UUID4
-    status_id: int
+    status_id: int = 1
 
 class Project(ProjectCreate):
     project_key: str
@@ -18,5 +18,5 @@ class ProjectList(BaseModel):
 class UpdateProject(ProjectCreate):
     pass
 
-class DeleteProject(Project):
+class DeleteProject(BaseModel):
     pass
