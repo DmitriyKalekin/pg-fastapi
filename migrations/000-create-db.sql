@@ -40,6 +40,13 @@ CREATE TABLE lib_status
     name VARCHAR(255) NOT NULL
 );
 
+INSERT INTO lib_status (name)
+VALUES 
+    ('TODO'),
+    ('InProgress'),
+    ('CodeReview'),
+    ('QA'),
+    ('Done');
 
 
 
@@ -57,7 +64,11 @@ CREATE TABLE projects
 
     constraint fk_manager_account
         foreign key (manager_id)
-            REFERENCES accounts (uid)
+            REFERENCES accounts (uid),
+    
+    constraint fk_project_status
+        foreign key (status_id)
+            REFERENCES lib_status (id)
 );
 --
 CREATE INDEX ON projects (created_at);
