@@ -1,12 +1,12 @@
 from fastapi import FastAPI, APIRouter, Path, Body, Query
 from fastapi.responses import JSONResponse
 from .deps import AProjectUC
-from .dto import ProjectCreate, Project, DeleteProject, ProjectList, UpdateProject, Error
+from .dto import ProjectCreate, Project, ProjectList, UpdateProject, Error, ProjectCreateSuccess
 
 prefix = "/api/v1/projects"
 router = APIRouter(prefix=prefix, tags=["projects"])
 
-@router.post("/", response_model=ProjectCreate, status_code=200)
+@router.post("/", response_model=ProjectCreateSuccess, responses={404: {"model": Error}})
 async def create_project(uc: AProjectUC, req: ProjectCreate = Body(...)):
     try:
         res = await uc.create_project(req)
@@ -14,12 +14,12 @@ async def create_project(uc: AProjectUC, req: ProjectCreate = Body(...)):
         return JSONResponse({"error": str(e)}, status_code=404)
     return res
 
-@router.get("/", response_model=ProjectList, status_code=200)
+@router.get("/", response_model=ProjectList)
 async def get_all_projects(uc: AProjectUC):
     prjlist: ProjectList = await uc.get_all_project()
     return prjlist
 
-@router.get("/{project_key}", response_model=Project, status_code=200)
+@router.get("/{project_key}", response_model=Project, responses={404: {"model": Error}})
 async def get_project(uc: AProjectUC, project_key: str = Path(...)):
     try:
         prj: Project = await uc.get_project(project_key)
@@ -27,7 +27,7 @@ async def get_project(uc: AProjectUC, project_key: str = Path(...)):
         return JSONResponse({"error": str(e)}, status_code=404)
     return prj
 
-@router.patch("/{project_key}", status_code=200)
+@router.patch("/{project_key}", responses={404: {"model": Error}})
 async def patch_project(
     uc: AProjectUC, project_key: str, project: UpdateProject = Body(...)
 ):
@@ -37,7 +37,7 @@ async def patch_project(
         return JSONResponse({"error": str(e)}, status_code=404)
     return res
 
-@router.put("/{project_key}", status_code=200)
+@router.put("/{project_key}", responses={404: {"model": Error}})
 async def put_project(
     uc: AProjectUC,
     project_key: str = Path(...),
@@ -56,11 +56,11 @@ async def put_project(
         return JSONResponse({"error": str(e)}, status_code=404)
     return res
 
-@router.delete("/{project_key}", status_code=200)
+@router.delete("/{project_key}", responses={404: {"model": Error}})
 async def delete_project(uc: AProjectUC, project_key: str = Path(...)):
     try:
         res = await uc.delete_project(project_key)
     except KeyError as e:
         return JSONResponse({"error": str(e)}, status_code=404)
-    return {"status": "OK" if res == True else "Deleted"}
+    return res
     
