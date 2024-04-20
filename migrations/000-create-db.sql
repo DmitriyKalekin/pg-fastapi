@@ -37,10 +37,10 @@ DROP TABLE IF EXISTS lib_status;
 CREATE TABLE lib_status
 (
     id   SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    status VARCHAR(255) NOT NULL
 );
 
-INSERT INTO lib_status (name)
+INSERT INTO lib_status (status) 
 VALUES 
     ('TODO'),
     ('InProgress'),
@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS projects;
 CREATE TABLE projects
 (
     id          BIGSERIAL PRIMARY KEY,
-    project_key VARCHAR(50)  NOT NULL,
+    project_key VARCHAR(50)  NOT NULL UNIQUE,
     name        VARCHAR(255) NOT NULL,
     manager_id  uuid NULL,                        -- FOREIGN KEY ... CONTRAINT accounts
     status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
