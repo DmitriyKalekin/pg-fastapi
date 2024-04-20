@@ -6,6 +6,10 @@ class Error(BaseModel):
     error: str
 
 
+class Success(BaseModel):
+    message: str
+
+
 class AccountCreate(BaseModel):
     email: EmailStr
     name: str

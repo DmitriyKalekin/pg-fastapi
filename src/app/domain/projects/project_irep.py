@@ -8,7 +8,7 @@ class IRepProject:  # pragma: no cover
     async def get_project(self, project_key: str) -> dict:
         raise NotImplementedError
 
-    async def update_project(self, project_key: str,req: dict) -> dict:
+    async def update_project(self, project_key: str, req: dict) -> dict:
         raise NotImplementedError
 
     async def delete_project(self, project_key: str) -> dict:

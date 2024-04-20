@@ -1,5 +1,5 @@
 from uuid import UUID
-from .dto import AccountCreate, Account, UpdateAccount, DeleteAccount, AccountList
+from .dto import AccountCreate, Account, UpdateAccount, Success, AccountList
 from .account_irep import IRepAccount
 
 
@@ -31,13 +31,6 @@ class AccountUseCase:
             raise KeyError("invalid uid")
         return Account(**account)
 
-    async def delete_account(self, uid: UUID) -> bool:
-        try:
-            res = await self._repo.delete_account(uid)
-        except KeyError:
-            raise KeyError("invalid uid")
-        return res
-
     async def patch_account(self, uid: UUID, req: UpdateAccount) -> bool:
         req_dict = req.model_dump()
 
@@ -45,11 +38,18 @@ class AccountUseCase:
             res = await self._repo.update_account(uid, req_dict)
         except KeyError:
             raise KeyError("invalid uid")
-        return res
+        return Success(message=res)
 
     async def put_account(self, uid: UUID, req: dict) -> bool:
         try:
             res = await self._repo.update_account(uid, req)
         except KeyError:
             raise KeyError("invalid uid")
-        return res
+        return Success(message=res)
+
+    async def delete_account(self, uid: UUID) -> bool:
+        try:
+            res = await self._repo.delete_account(uid)
+        except KeyError:
+            raise KeyError("invalid uid")
+        return Success(message=res)

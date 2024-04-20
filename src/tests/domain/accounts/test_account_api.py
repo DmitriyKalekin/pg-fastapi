@@ -31,7 +31,7 @@ class MockRepo(IRepAccount):
         }
 
     async def delete_account(self, _: str):
-        return {"status: OK"} if True else {"status: Doesn't exist"}
+        return "DELETE 1"
 
     async def update_account(self, _: UUID, req: dict):
         return "UPDATE 1"
@@ -106,7 +106,7 @@ async def test_delete_account__success(testclient, api_app):
     res = await testclient.delete(f"/api/v1/accounts/{uid}")
     assert res.status_code == 200
     assert (
-        res.json() == {"status": "OK"} if res == True else {"status": "Doesn't exist"}
+        res.json() == {"message": "DELETE 1"}
     )
 
 
@@ -118,7 +118,7 @@ async def test_patch_account__success(testclient, api_app):
     req = {"email": "aaa@dot.com", "name": "my_name"}
     res = await testclient.patch(f"/api/v1/accounts/{uid}", json=req)
     assert res.status_code == 200
-    assert res.json() == "UPDATE 1"
+    assert res.json() == {"message": "UPDATE 1"}
 
 
 async def test_put_account__success(testclient, api_app):
@@ -131,7 +131,7 @@ async def test_put_account__success(testclient, api_app):
         f"/api/v1/accounts/{uid}?email={req['email']}&name={req['name']}"
     )
     assert res.status_code == 200
-    assert res.json() == "UPDATE 1"
+    assert res.json() == {"message": "UPDATE 1"}
 
 
 async def test_create_account__email_busy(testclient, api_app):

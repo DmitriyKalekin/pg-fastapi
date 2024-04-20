@@ -31,15 +31,6 @@ async def get_account(uc: AAccountUC, uid: str = Path(...)):
     return acc
 
 
-@router.delete("/{uid}", responses={404: {"model": Error}})
-async def delete_account(uc: AAccountUC, uid: str = Path(...)):
-    try:
-        res: bool = await uc.delete_account(uid)
-    except KeyError as e:
-        return JSONResponse({"error": str(e)}, status_code=404)
-    return {"status": "OK"} if res == True else {"status": "Doesn't exist"}
-
-
 @router.patch("/{uid}", responses={404: {"model": Error}})
 async def patch_account(
     uc: AAccountUC, uid: str = Path(...), req: UpdateAccount = Body(...)
@@ -62,6 +53,15 @@ async def put_account(
 
     try:
         res = await uc.put_account(uid, req)
+    except KeyError as e:
+        return JSONResponse({"error": str(e)}, status_code=404)
+    return res
+
+
+@router.delete("/{uid}", responses={404: {"model": Error}})
+async def delete_account(uc: AAccountUC, uid: str = Path(...)):
+    try:
+        res: bool = await uc.delete_account(uid)
     except KeyError as e:
         return JSONResponse({"error": str(e)}, status_code=404)
     return res
