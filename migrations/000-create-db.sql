@@ -37,9 +37,16 @@ DROP TABLE IF EXISTS lib_status;
 CREATE TABLE lib_status
 (
     id   SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL
+    status VARCHAR(255) NOT NULL
 );
 
+INSERT INTO lib_status (status) 
+VALUES 
+    ('TODO'),
+    ('InProgress'),
+    ('CodeReview'),
+    ('QA'),
+    ('Done');
 
 
 
@@ -49,7 +56,7 @@ DROP TABLE IF EXISTS projects;
 CREATE TABLE projects
 (
     id          BIGSERIAL PRIMARY KEY,
-    project_key VARCHAR(50)  NOT NULL,
+    project_key VARCHAR(50)  NOT NULL UNIQUE,
     name        VARCHAR(255) NOT NULL,
     manager_id  uuid NULL,                        -- FOREIGN KEY ... CONTRAINT accounts
     status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
@@ -57,9 +64,22 @@ CREATE TABLE projects
 
     constraint fk_manager_account
         foreign key (manager_id)
-            REFERENCES accounts (uid)
-
+            REFERENCES accounts (uid),
+    
+    constraint fk_project_status
+        foreign key (status_id)
+            REFERENCES lib_status (id)
 );
+--
+CREATE INDEX ON projects (created_at);
+--
+COMMENT ON TABLE projects is 'Проекты';
+COMMENT ON COLUMN projects.project_key is 'Ключ проекта';
+COMMENT ON COLUMN projects.name is 'Название проекта';
+COMMENT ON COLUMN projects.manager_id is 'Привязанный аккаунт';
+COMMENT ON COLUMN projects.status_id is 'Статус';
+COMMENT ON COLUMN projects.created_at is 'Создание по UTC';
+
 
 
 DROP TABLE IF EXISTS tasks;
