@@ -52,33 +52,33 @@ VALUES
 
 
 
-DROP TABLE IF EXISTS projects;
-CREATE TABLE projects
-(
-    id          BIGSERIAL PRIMARY KEY,
-    project_key VARCHAR(50)  NOT NULL UNIQUE,
-    name        VARCHAR(255) NOT NULL,
-    manager_id  uuid NULL,                        -- FOREIGN KEY ... CONTRAINT accounts
-    status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
-    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+-- DROP TABLE IF EXISTS projects;
+-- CREATE TABLE projects
+-- (
+--     id          BIGSERIAL PRIMARY KEY,
+--     project_key VARCHAR(50)  NOT NULL UNIQUE,
+--     name        VARCHAR(255) NOT NULL,
+--     manager_id  uuid NULL,                        -- FOREIGN KEY ... CONTRAINT accounts
+--     status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
+--     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
 
-    constraint fk_manager_account
-        foreign key (manager_id)
-            REFERENCES accounts (uid),
+--     constraint fk_manager_account
+--         foreign key (manager_id)
+--             REFERENCES accounts (uid),
     
-    constraint fk_project_status
-        foreign key (status_id)
-            REFERENCES lib_status (id)
-);
---
-CREATE INDEX ON projects (created_at);
---
-COMMENT ON TABLE projects is 'Проекты';
-COMMENT ON COLUMN projects.project_key is 'Ключ проекта';
-COMMENT ON COLUMN projects.name is 'Название проекта';
-COMMENT ON COLUMN projects.manager_id is 'Привязанный аккаунт';
-COMMENT ON COLUMN projects.status_id is 'Статус';
-COMMENT ON COLUMN projects.created_at is 'Создание по UTC';
+--     constraint fk_project_status
+--         foreign key (status_id)
+--             REFERENCES lib_status (id)
+-- );
+-- --
+-- CREATE INDEX ON projects (created_at);
+-- --
+-- COMMENT ON TABLE projects is 'Проекты';
+-- COMMENT ON COLUMN projects.project_key is 'Ключ проекта';
+-- COMMENT ON COLUMN projects.name is 'Название проекта';
+-- COMMENT ON COLUMN projects.manager_id is 'Привязанный аккаунт';
+-- COMMENT ON COLUMN projects.status_id is 'Статус';
+-- COMMENT ON COLUMN projects.created_at is 'Создание по UTC';
 
 
 
