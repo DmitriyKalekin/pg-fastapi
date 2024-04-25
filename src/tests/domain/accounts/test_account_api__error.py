@@ -10,9 +10,11 @@ from mock_pg_repo.mockrepo import MockRepoError
 
 pytestmark = pytest.mark.asyncio
 
+
 async def create_account_uc_override__error():
     repo = MockRepoError()
     return AccountUseCase(repo)
+
 
 async def test_create_account__email_busy(testclient, api_app):
     api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error
@@ -62,6 +64,7 @@ async def test_get_account__account_not_found(testclient, api_app):
     res = await testclient.get(f"/api/v1/accounts/{uid}")
     assert res.status_code == 404
     assert res.json() == {"error": "account not found"}
+
 
 async def test_putch_account__account_not_found(testclient, api_app):
     api_app.dependency_overrides[create_account_uc] = create_account_uc_override__error

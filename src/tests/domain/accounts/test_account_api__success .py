@@ -13,6 +13,7 @@ async def create_account_uc_override__success():
     repo = MockRepo()
     return AccountUseCase(repo)
 
+
 async def test_create_account__success(testclient, api_app):
     api_app.dependency_overrides[create_account_uc] = (
         create_account_uc_override__success
@@ -57,9 +58,7 @@ async def test_delete_account__success(testclient, api_app):
     uid = {"uid": "56986558-57f9-4117-a26f-05fa0cffe8ee"}
     res = await testclient.delete(f"/api/v1/accounts/{uid}")
     assert res.status_code == 200
-    assert (
-        res.json() == {"message": "account deleted"}
-    )
+    assert res.json() == {"message": "account deleted"}
 
 
 async def test_patch_account__success(testclient, api_app):
@@ -72,7 +71,7 @@ async def test_patch_account__success(testclient, api_app):
     assert res.status_code == 200
     assert res.json() == {
         "message": "updated",
-        "new_data": {"uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", **req}
+        "new_data": {"uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", **req},
     }
 
 
@@ -86,5 +85,5 @@ async def test_put_account__success(testclient, api_app):
     assert res.status_code == 200
     assert res.json() == {
         "message": "updated",
-        "new_data": {"uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", **req}
+        "new_data": {"uid": "56986558-57f9-4117-a26f-05fa0cffe8ee", **req},
     }

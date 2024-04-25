@@ -73,10 +73,10 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 account = await conn.fetchrow(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            
+
             if account is None:
                 raise ValueError("account not found")
-            
+
             return account
 
     async def delete_account(self, uid: UUID) -> dict:
@@ -92,13 +92,13 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 res = await conn.execute(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            
+
             if res == "DELETE 0":
                 return {"message": "account not found"}
             else:
                 return {"message": "account deleted"}
 
-    async def update_account(self, uid: UUID, acc: tuple) -> dict:
+    async def update_account(self, uid: UUID, acc: tuple) -> UUID:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
@@ -115,9 +115,8 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 res = await conn.fetchval(q, uid, *acc)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            
+
             if res is None:
                 raise ValueError("account not found")
 
             return res
-            

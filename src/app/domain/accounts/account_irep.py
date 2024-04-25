@@ -14,5 +14,5 @@ class IRepAccount:  # pragma: no cover
     async def update_account(self, uid: UUID, acc: dict) -> dict:
         raise NotImplementedError
 
-    async def delete_account(self, uid: UUID) -> bool:
+    async def delete_account(self, uid: UUID) -> UUID:
         raise NotImplementedError

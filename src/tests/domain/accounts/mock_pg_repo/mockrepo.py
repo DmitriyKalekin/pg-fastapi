@@ -1,6 +1,7 @@
 from uuid import UUID
 from app.domain.accounts.account_irep import IRepAccount
 
+
 class MockRepo(IRepAccount):
     async def create_account(self, _: dict):
         return "56986558-57f9-4117-a26f-05fa0cffe8ee"
@@ -26,7 +27,8 @@ class MockRepo(IRepAccount):
 
     async def update_account(self, _: UUID, req: tuple):
         return "56986558-57f9-4117-a26f-05fa0cffe8ee"
-    
+
+
 class MockRepoError(IRepAccount):
     async def create_account(self, _: dict):
         raise KeyError("email busy")

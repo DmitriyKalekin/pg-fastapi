@@ -6,11 +6,14 @@ from .account_irep import IRepAccount
 class EmailBusyException(Exception):
     pass
 
+
 class InvalidUidException(Exception):
     pass
 
+
 class AccountNotFoundException(Exception):
     pass
+
 
 class AccountUseCase:
     def __init__(self, repo: IRepAccount):

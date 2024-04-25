@@ -1,7 +1,19 @@
 from fastapi import APIRouter, FastAPI, Path, Body, Query
 from fastapi.responses import JSONResponse
-from .deps import AAccountUC, EmailBusyException, InvalidUidException, AccountNotFoundException
-from .dto import AccountCreate, Account, Error, AccountList, UpdateAccount, DeleteAccount
+from .deps import (
+    AAccountUC,
+    EmailBusyException,
+    InvalidUidException,
+    AccountNotFoundException,
+)
+from .dto import (
+    AccountCreate,
+    Account,
+    Error,
+    AccountList,
+    UpdateAccount,
+    DeleteAccount,
+)
 
 prefix = "/api/v1/accounts"
 router = APIRouter(prefix=prefix, tags=["accounts"])
@@ -22,8 +34,10 @@ async def get_all_accounts(uc: AAccountUC):
     return acclist
 
 
-@router.get("/{uid}", response_model=Account, 
-    responses={404: {"model": Error}, 422: {"model": Error}}
+@router.get(
+    "/{uid}",
+    response_model=Account,
+    responses={404: {"model": Error}, 422: {"model": Error}},
 )
 async def get_account(uc: AAccountUC, uid: str = Path(...)):
     try:
@@ -35,8 +49,10 @@ async def get_account(uc: AAccountUC, uid: str = Path(...)):
     return acc
 
 
-@router.patch("/{uid}", response_model=UpdateAccount, 
-    responses={404: {"model": Error}, 422: {"model": Error}}
+@router.patch(
+    "/{uid}",
+    response_model=UpdateAccount,
+    responses={404: {"model": Error}, 422: {"model": Error}},
 )
 async def patch_account(
     uc: AAccountUC, uid: str = Path(...), req: AccountCreate = Body(...)
@@ -50,13 +66,13 @@ async def patch_account(
     return res
 
 
-@router.put("/{uid}", response_model=UpdateAccount, 
-    responses={404: {"model": Error}, 422: {"model": Error}}
+@router.put(
+    "/{uid}",
+    response_model=UpdateAccount,
+    responses={404: {"model": Error}, 422: {"model": Error}},
 )
 async def put_account(
-    uc: AAccountUC,
-    uid: str = Path(...),
-    req: AccountCreate = Body(...)
+    uc: AAccountUC, uid: str = Path(...), req: AccountCreate = Body(...)
 ):
     try:
         res = await uc.put_account(uid, req)
@@ -67,8 +83,10 @@ async def put_account(
     return res
 
 
-@router.delete("/{uid}", response_model=DeleteAccount,
-    responses={404: {"model": Error}, 422: {"model": Error}}
+@router.delete(
+    "/{uid}",
+    response_model=DeleteAccount,
+    responses={404: {"model": Error}, 422: {"model": Error}},
 )
 async def delete_account(uc: AAccountUC, uid: str = Path(...)):
     try:
