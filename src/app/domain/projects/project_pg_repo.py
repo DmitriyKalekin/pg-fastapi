@@ -1,5 +1,4 @@
 from .project_irep import IRepProject
-from uuid import uuid4, UUID
 from pydantic_settings import BaseSettings
 import asyncpg
 from contextlib import asynccontextmanager
@@ -27,90 +26,112 @@ class ProjectPgRepo(IRepProject):  # pragma: no cover
             )
         yield self._pool
 
-    async def create_project(self, req: dict) -> dict:
+    async def create_project(self, req: tuple) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                INSERT INTO projects (project_key, name, manager_id, status_id)
-                VALUES ($1, $2, $3, $4)
-                RETURNING name
+                INSERT INTO projects (
+                    project_key
+                    , name
+                    , manager_id
+                )
+                VALUES ($1, $2, $3)
+                RETURNING (
+                    SELECT (
+                        uid
+                        , name
+                    )
+                    FROM accounts 
+                    WHERE uid=($3)
+                )
             """
             try:
-                res = await conn.fetchval(
-                    q,
-                    req["project_key"],
-                    req["project_key"][: req["project_key"].find("-")],
-                    req["manager_id"],
-                    req["status"],
-                )
-            except asyncpg.exceptions.UniqueViolationError:
-                raise KeyError("key busy")
+                res = await conn.fetchval(q, *req)
+            except asyncpg.exceptions.ForeignKeyViolationError:
+                raise KeyError("uid not found")
             return res
 
-    async def get_all_project(self) -> dict:
+    async def get_all_project(self) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
                 SELECT 
-                    projects.project_key,
-                    projects.name,
-                    projects.manager_id,
-                    lib_status.status
-                FROM projects
-                INNER JOIN lib_status ON projects.status_id=lib_status.id
+                    p.project_key
+                    , p.name
+                    , a.uid
+                    , a.name
+                FROM projects AS p, accounts AS a
+                WHERE a.uid = p.manager_id
+                LIMIT 100
             """
             projects = await conn.fetch(q)
             return projects
 
-    async def get_project(self, project_key: str) -> dict:
+    async def get_project(self, project_key: str) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
                 SELECT 
-                    projects.project_key,
-                    projects.name,
-                    projects.manager_id,
-                    lib_status.status
-                FROM projects
-                INNER JOIN lib_status ON projects.status_id=lib_status.id
-                WHERE project_key=($1)
+                    p.project_key
+                    , p.name
+                    , a.uid
+                    , a.name
+                FROM projects AS p, accounts AS a
+                WHERE p.project_key=($1) AND a.uid = p.manager_id
             """
-
             project = await conn.fetchrow(q, project_key)
             if project is None:
-                raise KeyError("key not found")
+                raise ValueError("key not found")
             return project
 
-    async def update_project(self, project_key: str, req: dict) -> dict:
+    async def update_project(self, project_key: str, req: tuple) -> dict:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
                 UPDATE projects
-                SET name=($2), manager_id=($3), status_id=($4)
-                WHERE project_key=($1)
+                SET (
+                    name
+                    , manager_id
+                ) = ($2, $3)
+                WHERE id in (
+                    SELECT id
+                    FROM projects
+                    WHERE project_key=($1)
+                    LIMIT 1
+                )
+                RETURNING (
+                    SELECT (
+                        uid
+                        , name
+                    )
+                    FROM accounts
+                    WHERE uid=($3)
+                )
             """
 
-            if await self.get_project(project_key) is None:
-                raise KeyError("key not found")
-            else:
-                res = await conn.execute(
-                    q, project_key, req["name"], req["manager_id"], req["status"]
-                )
-                return res
+            if await self.get_project(project_key) != None:
+                try:
+                    res = await conn.fetchval(q, project_key, *req)
+                    return res
+                except asyncpg.exceptions.ForeignKeyViolationError:
+                    raise KeyError("uid not found")
 
     async def delete_project(self, project_key: str) -> bool:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
-                DELETE FROM projects WHERE project_key=($1)
+                DELETE 
+                FROM projects 
+                WHERE id in (
+                    SELECT id
+                    FROM projects
+                    WHERE project_key=($1)
+                    LIMIT 1
+                )
             """
 
-            check = """
-                SELECT * FROM projects WHERE project_key=($1)
-            """
-            try:
-                if await conn.fetchval(check, project_key) is None:
-                    raise KeyError("invalid key")
-            finally:
-                res = await conn.execute(q, project_key)
-            return res
+            res = await conn.execute(q, project_key)
+            if res == "DELETE 0":
+                raise KeyError("key not found")
+            else:
+                return {"message": "project deleted"}

@@ -1,12 +1,21 @@
 from .dto import (
+    Account,
     ProjectCreate,
     Project,
     ProjectList,
     UpdateProject,
-    Success,
-    ProjectCreateSuccess,
+    UpdatedProject,
 )
+
 from .project_irep import IRepProject
+
+
+class UidNotFound(Exception):
+    pass
+
+
+class KeyNotFound(Exception):
+    pass
 
 
 class ProjectUseCase:
@@ -14,45 +23,80 @@ class ProjectUseCase:
     def __init__(self, repo: IRepProject):
         self._repo = repo
 
-    async def create_project(self, req: ProjectCreate) -> ProjectCreateSuccess:
+    async def create_project(self, req: ProjectCreate):
         req_dict = req.model_dump()
         try:
-            res = await self._repo.create_project(req_dict)
+            res = await self._repo.create_project(tuple(req_dict.values()))
         except KeyError:
-            raise KeyError("key busy")
-        return ProjectCreateSuccess(name=res, **req_dict)
+            raise UidNotFound("uid not found")
+        return Project(
+            project_key=req_dict["project_key"],
+            name=req_dict["name"],
+            manager_id=Account(uid=res[0], name=res[1]),
+        )
 
     async def get_all_project(self) -> ProjectList:
         projects = await self._repo.get_all_project()
-        items = [Project(**el) for el in projects]
+        items = [
+            Project(
+                project_key=el[0], name=el[1], manager_id=Account(uid=el[2], name=el[3])
+            )
+            for el in projects
+        ]
         return ProjectList(count=len(projects), items=items)
 
     async def get_project(self, project_key: str) -> Project:
         try:
             res = await self._repo.get_project(project_key)
-        except KeyError:
-            raise KeyError("key not found")
-        return Project(**res)
+        except ValueError:
+            raise KeyNotFound("key not found")
+        return Project(
+            project_key=res[0], name=res[1], manager_id=Account(uid=res[2], name=res[3])
+        )
 
-    async def patch_project(self, project_key: str, req: UpdateProject) -> bool:
+    async def patch_project(self, project_key: str, req: UpdateProject) -> dict:
         req_dict = req.model_dump()
 
         try:
-            res = await self._repo.update_project(project_key, req_dict)
-        except KeyError:
-            raise KeyError("key not found")
-        return Success(message=res)
+            res = await self._repo.update_project(project_key, tuple(req_dict.values()))
+        except ValueError:
+            raise KeyNotFound("key not found")
 
-    async def put_project(self, project_key: str, req: dict) -> bool:
+        except KeyError:
+            raise UidNotFound("uid not found")
+
+        return UpdatedProject(
+            message="updated",
+            new_data=Project(
+                project_key=project_key,
+                name=req_dict["name"],
+                manager_id=Account(uid=res[0], name=res[1]),
+            ),
+        )
+
+    async def put_project(self, project_key: str, req: UpdateProject) -> dict:
+        req_dict = req.model_dump()
+
         try:
-            res = await self._repo.update_project(project_key, req)
-        except KeyError:
-            raise KeyError("key not found")
-        return Success(message=res)
+            res = await self._repo.update_project(project_key, tuple(req_dict.values()))
+        except ValueError:
+            raise KeyNotFound("key not found")
 
-    async def delete_project(self, project_key: str) -> bool:
+        except KeyError:
+            raise UidNotFound("uid not found")
+
+        return UpdatedProject(
+            message="updated",
+            new_data=Project(
+                project_key=project_key,
+                name=req_dict["name"],
+                manager_id=Account(uid=res[0], name=res[1]),
+            ),
+        )
+
+    async def delete_project(self, project_key: str) -> dict:
         try:
             res = await self._repo.delete_project(project_key)
         except KeyError:
-            raise KeyError("invalid key")
-        return Success(message=res)
+            raise KeyNotFound("key not found")
+        return res

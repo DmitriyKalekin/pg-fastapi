@@ -5,28 +5,21 @@ class Error(BaseModel):
     error: str
 
 
-class Success(BaseModel):
-    message: str
+class Account(BaseModel):
+    uid: UUID4
+    name: str
 
 
 class ProjectCreate(BaseModel):
     project_key: str = "name-num"
-    manager_id: UUID4
-    status: int = 1
-
-
-class ProjectCreateSuccess(BaseModel):
-    project_key: str
     name: str
     manager_id: UUID4
-    status: int
 
 
 class Project(BaseModel):
     project_key: str
     name: str
-    manager_id: UUID4
-    status: str
+    manager_id: Account = {}
 
 
 class ProjectList(BaseModel):
@@ -37,4 +30,12 @@ class ProjectList(BaseModel):
 class UpdateProject(BaseModel):
     name: str
     manager_id: UUID4
-    status: int = 1
+
+
+class UpdatedProject(BaseModel):
+    message: str
+    new_data: Project = {}
+
+
+class DeleteProject(BaseModel):
+    message: str
