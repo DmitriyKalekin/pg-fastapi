@@ -27,16 +27,19 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
             )
         yield self._pool
 
-    async def create_account(self, acc: dict) -> UUID:
+    async def create_account(self, acc: tuple) -> UUID:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                INSERT INTO accounts (email, name)
+                INSERT INTO accounts (
+                    email
+                    , name
+                )
                 VALUES ($1, $2)
-                RETURNING uid
+                RETURNING uid;
             """
             try:
-                uid = await conn.fetchval(q, acc["email"], acc["name"])
+                uid = await conn.fetchval(q, *acc)
             except asyncpg.exceptions.UniqueViolationError:
                 raise KeyError("email busy")
             return uid
@@ -45,7 +48,11 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                SELECT * FROM accounts
+                SELECT 
+                    a.uid
+                    , a.email
+                    , a.name
+                FROM accounts AS a
             """
             accounts = await conn.fetch(q)
             return accounts
@@ -54,39 +61,63 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                SELECT * FROM accounts WHERE uid=($1)
+                SELECT 
+                    a.uid
+                    , a.email
+                    , a.name     
+                FROM accounts AS a
+                WHERE a.uid=($1)
             """
 
             try:
                 account = await conn.fetchrow(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
+            
+            if account is None:
+                raise ValueError("account not found")
+            
             return account
 
     async def delete_account(self, uid: UUID) -> dict:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                DELETE FROM accounts WHERE uid=($1)
+                DELETE
+                FROM accounts AS a 
+                WHERE a.uid=($1)
             """
 
             try:
                 res = await conn.execute(q, uid)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            return res
+            
+            if res == "DELETE 0":
+                return {"message": "account not found"}
+            else:
+                return {"message": "account deleted"}
 
-    async def update_account(self, uid: UUID, acc: dict) -> dict:
+    async def update_account(self, uid: UUID, acc: tuple) -> dict:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
-                UPDATE accounts
-                SET email=($2), name=($3)
+                UPDATE accounts 
+                SET (
+                    email
+                    , name
+                ) = ($2, $3)
                 WHERE uid=($1)
+                RETURNING uid;
             """
 
             try:
-                res = await conn.execute(q, uid, acc["email"], acc["name"])
+                res = await conn.fetchval(q, uid, *acc)
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
+            
+            if res is None:
+                raise ValueError("account not found")
+
             return res
+            

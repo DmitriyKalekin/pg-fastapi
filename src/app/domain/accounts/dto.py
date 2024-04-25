@@ -24,9 +24,10 @@ class AccountList(BaseModel):
     items: list[Account] = []
 
 
-class UpdateAccount(AccountCreate):
-    pass
+class UpdateAccount(BaseModel):
+    message: str
+    new_data: Account = {}
 
 
-class DeleteAccount(Account):
-    pass
+class DeleteAccount(BaseModel):
+    message: str
