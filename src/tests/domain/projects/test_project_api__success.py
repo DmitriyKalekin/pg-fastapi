@@ -5,9 +5,6 @@ from mock_pg_repo.mockrepo import MockRepo
 pytestmark = pytest.mark.asyncio
 
 
-
-
-
 async def deps_pg_override__success():
     repo = MockRepo()
     return ProjectUseCase(repo)
@@ -17,16 +14,18 @@ async def test_create_project__success(testclient, api_app):
     api_app.dependency_overrides[deps_pg] = deps_pg_override__success
     req = {
         "project_key": "g-1",
+        "name": "g",
         "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-        "status": 1,
     }
     res = await testclient.post("/api/v1/projects/", json=req)
     assert res.status_code == 200
     assert res.json() == {
         "project_key": "g-1",
         "name": "g",
-        "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-        "status": 1,
+        "manager_id": {
+            "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+            "name": "my_name",
+        },
     }
 
 
