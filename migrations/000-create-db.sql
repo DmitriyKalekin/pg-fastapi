@@ -42,11 +42,11 @@ CREATE TABLE lib_status
 
 INSERT INTO lib_status (status) 
 VALUES 
-    ('TODO'),
-    ('InProgress'),
-    ('CodeReview'),
-    ('QA'),
-    ('Done');
+    ('TODO')
+    , ('InProgress')
+    , ('CodeReview')
+    , ('QA')
+    , ('Done');
 
 
 
@@ -82,25 +82,25 @@ VALUES
 
 
 
-DROP TABLE IF EXISTS tasks;
-CREATE TABLE tasks
-(
-    id          BIGSERIAL PRIMARY KEY,
-    project_key VARCHAR(50)  NOT NULL,
-    project_id  int          NOT NULL,           -- FOREIGN KEY ... CONTRAINT
-    summary     VARCHAR(255) NOT NULL,
-    description TEXT NULL,
-    assignee_id uuid NULL,                       -- FOREIGN KEY ... CONTRAINT accounts
-    status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
-    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+-- DROP TABLE IF EXISTS tasks;
+-- CREATE TABLE tasks
+-- (
+--     id          BIGSERIAL PRIMARY KEY,
+--     project_key VARCHAR(50)  NOT NULL,
+--     project_id  int          NOT NULL,           -- FOREIGN KEY ... CONTRAINT
+--     summary     VARCHAR(255) NOT NULL,
+--     description TEXT NULL,
+--     assignee_id uuid NULL,                       -- FOREIGN KEY ... CONTRAINT accounts
+--     status_id   int          NOT NULL DEFAULT 1, -- FOREIGN KEY ... CONTRAINT
+--     created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
 
-    constraint fk_assignee_task
-        foreign key (assignee_id)
-            REFERENCES accounts (uid),
+--     constraint fk_assignee_task
+--         foreign key (assignee_id)
+--             REFERENCES accounts (uid),
 
-    constraint fk_status
-        foreign key (status_id)
-            REFERENCES lib_status (id)
+--     constraint fk_status
+--         foreign key (status_id)
+--             REFERENCES lib_status (id)
 
 
-);
+-- );
