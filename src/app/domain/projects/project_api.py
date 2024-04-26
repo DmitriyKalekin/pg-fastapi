@@ -15,7 +15,7 @@ prefix = "/api/v1/projects"
 router = APIRouter(prefix=prefix, tags=["projects"])
 
 
-@router.post("/", response_model=ProjectCreate, responses={422: {"model": Error}})
+@router.post("/", response_model=Project, responses={422: {"model": Error}})
 async def create_project(uc: AProjectUC, req: ProjectCreate = Body(...)):
     try:
         res: Project = await uc.create_project(req)

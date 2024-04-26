@@ -53,6 +53,7 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                     , a.email
                     , a.name
                 FROM accounts AS a
+                LIMIT 100
             """
             accounts = await conn.fetch(q)
             return accounts
