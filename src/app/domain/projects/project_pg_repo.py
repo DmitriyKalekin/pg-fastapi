@@ -47,17 +47,23 @@ class ProjectPgRepo(IRepProject):  # pragma: no cover
                 raise KeyError("key busy")
             return res
 
-    async def get_all_project(self) -> dict:
+    async def get_all_project(self) -> list[dict]:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
                 SELECT 
-                    projects.project_key,
-                    projects.name,
-                    projects.manager_id,
-                    lib_status.status
-                FROM projects
-                INNER JOIN lib_status ON projects.status_id=lib_status.id
+                    -- Issue 
+                    p.project_key,
+                    p.name,
+                    p.manager_id,
+                    -- Status
+                    ls.id,
+                    ls.status,
+                    -- Account
+                    t.assignee_id,
+                    t.assignee_name
+                FROM projects p
+                INNER JOIN lib_status ls ON p.status_id=ls.id
             """
             projects = await conn.fetch(q)
             return projects

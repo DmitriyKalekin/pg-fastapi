@@ -1,7 +1,7 @@
 from fastapi import APIRouter, FastAPI, Path, Body, Query
 from fastapi.responses import JSONResponse
 from .deps import AAccountUC, EmailBusyException
-from .dto import AccountCreate, Account, Error, AccountList, UpdateAccount
+from .dto import AccountCreate, Account, Error, AccountList, UpdateAccount, PatchAccount
 
 prefix = "/api/v1/accounts"
 router = APIRouter(prefix=prefix, tags=["accounts"])
@@ -33,7 +33,9 @@ async def get_account(uc: AAccountUC, uid: str = Path(...)):
 
 @router.patch("/{uid}", responses={404: {"model": Error}})
 async def patch_account(
-    uc: AAccountUC, uid: str = Path(...), req: UpdateAccount = Body(...)
+    uc: AAccountUC,
+    uid: str = Path(...),
+    req: PatchAccount = Body(...)
 ):
     try:
         res = await uc.patch_account(uid, req)
@@ -46,10 +48,11 @@ async def patch_account(
 async def put_account(
     uc: AAccountUC,
     uid: str = Path(...),
-    email: str = Query(...),
-    name: str = Query(...),
+    # email: str = Query(...),
+    # name: str = Query(...),
+    req: UpdateAccount = Body(...)
 ):
-    req = {"email": email, "name": name}
+    # req = {"email": email, "name": name}
 
     try:
         res = await uc.put_account(uid, req)

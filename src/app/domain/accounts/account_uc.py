@@ -31,7 +31,7 @@ class AccountUseCase:
             raise KeyError("invalid uid")
         return Account(**account)
 
-    async def patch_account(self, uid: UUID, req: UpdateAccount) -> bool:
+    async def patch_account(self, uid: UUID, req: UpdateAccount) -> Success:
         req_dict = req.model_dump()
 
         try:
@@ -40,14 +40,14 @@ class AccountUseCase:
             raise KeyError("invalid uid")
         return Success(message=res)
 
-    async def put_account(self, uid: UUID, req: dict) -> bool:
+    async def put_account(self, uid: UUID, req: dict) -> Success:
         try:
             res = await self._repo.update_account(uid, req)
         except KeyError:
             raise KeyError("invalid uid")
         return Success(message=res)
 
-    async def delete_account(self, uid: UUID) -> bool:
+    async def delete_account(self, uid: UUID) -> Success:
         try:
             res = await self._repo.delete_account(uid)
         except KeyError:

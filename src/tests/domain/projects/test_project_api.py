@@ -9,7 +9,7 @@ class MockRepo(IRepProject):
     async def create_project(self, _: dict) -> dict:
         return "g"
 
-    async def get_all_project(self) -> dict:
+    async def get_all_project(self) -> list[dict]:
         return [
             {
                 "project_key": "g-1",

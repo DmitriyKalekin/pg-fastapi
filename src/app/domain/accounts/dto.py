@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr, UUID4
 from pydantic.fields import Field
+from typing import Optional
 
 
 class Error(BaseModel):
@@ -26,6 +27,11 @@ class AccountList(BaseModel):
 
 class UpdateAccount(AccountCreate):
     pass
+
+
+class PatchAccount(AccountCreate):
+    email: Optional[EmailStr] = None
+    name: Optional[str] = None
 
 
 class DeleteAccount(Account):

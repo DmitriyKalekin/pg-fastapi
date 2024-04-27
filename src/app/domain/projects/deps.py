@@ -5,8 +5,8 @@ from .project_pg_repo import ProjectPgRepo
 from .config import Config, get_config
 
 
-async def deps_pg():  # pragma: no cover
-    cfg = get_config()
+async def deps_pg() -> ProjectUseCase:  # pragma: no cover
+    cfg: Config = get_config()
     repo = ProjectPgRepo(cfg)
     return ProjectUseCase(repo)
 

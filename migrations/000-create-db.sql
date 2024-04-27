@@ -42,7 +42,7 @@ CREATE TABLE lib_status
 
 INSERT INTO lib_status (status) 
 VALUES 
-    ('TODO'),
+    ('TODO'), -- ("id_todo", "To Do")
     ('InProgress'),
     ('CodeReview'),
     ('QA'),

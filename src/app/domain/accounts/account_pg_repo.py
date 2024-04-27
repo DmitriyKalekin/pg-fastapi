@@ -41,11 +41,17 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 raise KeyError("email busy")
             return uid
 
-    async def get_all_account(self) -> dict:
+    async def get_all_account(self) -> list[dict]:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                SELECT * FROM accounts
+                SELECT 
+                    email,
+                    name 
+                FROM accounts
+                -- WHERE is_deleted IS NULL
+                -- AND is_blocked IS NULL
+                LIMIT 100;
             """
             accounts = await conn.fetch(q)
             return accounts
@@ -54,7 +60,11 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                SELECT * FROM accounts WHERE uid=($1)
+                SELECT 
+                   email,
+                   name
+                FROM accounts 
+                WHERE uid=$1;
             """
 
             try:
@@ -63,30 +73,36 @@ class AccountPgRepo(IRepAccount):  # pragma: no cover
                 raise KeyError("invalid uid")
             return account
 
-    async def delete_account(self, uid: UUID) -> dict:
+    async def delete_account(self, uid: UUID) -> bool:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
-                DELETE FROM accounts WHERE uid=($1)
+                DELETE FROM accounts WHERE uid=$1 LIMIT 1;
             """
 
             try:
-                res = await conn.execute(q, uid)
+                _ = await conn.execute(q, uid)
+                # TODO: обработать, если 0 или если 1 запись затронута
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            return res
+            return True
 
-    async def update_account(self, uid: UUID, acc: dict) -> dict:
+    async def update_account(self, uid: UUID, acc: dict) -> bool:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = f"""
                 UPDATE accounts
-                SET email=($2), name=($3)
-                WHERE uid=($1)
+                SET 
+                email=$2, 
+                name=$3
+                WHERE uid=$1
+                LIMIT 1;
             """
 
             try:
-                res = await conn.execute(q, uid, acc["email"], acc["name"])
+                res = await conn.execute(q, uid, acc["email"], acc["name"])  # *acc
             except asyncpg.exceptions.DataError:
                 raise KeyError("invalid uid")
-            return res
+            if res == 0:
+                return False
+            return True
