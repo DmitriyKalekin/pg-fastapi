@@ -1,10 +1,18 @@
 from pydantic import BaseModel, UUID4, ConfigDict
 
-def convert_uuid_to_str(uuid) -> str:
+def convert_uuid_to_str(uuid) -> str: # pragma: no cover
     return str(uuid)
 
 class Error(BaseModel):
     error: str
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "error": "some error"
+            }
+        }
+    )
 
 
 class Account(BaseModel):

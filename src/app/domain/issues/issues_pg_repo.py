@@ -24,4 +24,9 @@ class IssuesPgRepo(IrepIssue):
             )
         yield self._pool
 
-    # TODO: add postgress func
+    async def create_issue(self, req: tuple) -> list: pass
+    async def get_all_issues(self) -> list[dict]: pass
+    async def get_issue_by_id(self, req: str) -> dict: pass
+    async def get_issue_by_project(self, req: str) -> list[dict]: pass
+    async def update_issue(self, req: tuple) -> dict: pass
+    async def delete_issue(self, req: str) -> dict: pass
