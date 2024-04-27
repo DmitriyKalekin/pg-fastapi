@@ -6,7 +6,7 @@ from app.domain.accounts.deps import (
     InvalidUidException,
     AccountNotFoundException,
 )
-from mock_pg_repo.mockrepo import MockRepoError
+from .mock_pg_repo.mockrepo import MockRepoError
 
 pytestmark = pytest.mark.asyncio
 

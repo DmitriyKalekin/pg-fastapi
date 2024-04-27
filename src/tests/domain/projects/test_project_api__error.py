@@ -1,6 +1,6 @@
 import pytest
-from app.domain.projects.deps import deps_pg, ProjectUseCase
-from mock_pg_repo.mockrepo import MockRepoError
+from app.domain.projects.deps import deps_pg, ProjectUseCase, KeyNotFound, UidNotFound
+from .mock_pg_repo.mockrepo import MockRepoError
 
 pytestmark = pytest.mark.asyncio
 
@@ -8,6 +8,7 @@ pytestmark = pytest.mark.asyncio
 async def deps_pg_override__error():
     repo = MockRepoError()
     return ProjectUseCase(repo)
+
 
 async def test_create_project__key_busy(testclient, api_app):
     api_app.dependency_overrides[deps_pg] = deps_pg_override__error

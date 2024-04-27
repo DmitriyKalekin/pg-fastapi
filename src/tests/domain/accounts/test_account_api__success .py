@@ -3,7 +3,7 @@ from app.domain.accounts.deps import (
     create_account_uc,
     AccountUseCase,
 )
-from mock_pg_repo.mockrepo import MockRepo
+from .mock_pg_repo.mockrepo import MockRepo
 
 
 pytestmark = pytest.mark.asyncio

@@ -1,6 +1,6 @@
 import pytest
 from app.domain.projects.deps import deps_pg, ProjectUseCase
-from mock_pg_repo.mockrepo import MockRepo
+from .mock_pg_repo.mockrepo import MockRepo
 
 pytestmark = pytest.mark.asyncio
 
