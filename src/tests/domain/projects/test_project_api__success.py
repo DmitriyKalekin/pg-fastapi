@@ -36,12 +36,17 @@ async def test_get_all_project__success(testclient, api_app):
         {
             "project_key": "g-1",
             "name": "g",
-            "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-            "status": "TODO",
+            "manager_id": {
+                "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+                "name": "my_name",
+            },
         }
     ]
     assert res.status_code == 200
-    assert res.json() == {"count": len(req), "items": req}
+    assert res.json() == {
+        "count": len(req),
+        "items": req
+    }
 
 
 async def test_get_project__success(testclient, api_app):
@@ -52,8 +57,10 @@ async def test_get_project__success(testclient, api_app):
     assert res.json() == {
         "project_key": "g-1",
         "name": "g",
-        "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-        "status": "TODO",
+        "manager_id": {
+            "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+            "name": "my_name",
+        },
     }
 
 
@@ -63,11 +70,20 @@ async def test_patch_project__success(testclient, api_app):
     req = {
         "name": "b",
         "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-        "status": 1,
     }
     res = await testclient.patch(f"/api/v1/projects/{project_key}", json=req)
     assert res.status_code == 200
-    assert res.json() == {"message": "UPDATE 1"}
+    assert res.json() == {
+        "message": "updated",
+        "new_data": {
+            "project_key": "g-1",
+            "name": "b",
+            "manager_id": {
+                "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+                "name": "my_name",
+            },
+        }
+    }
 
 
 async def test_put_project__success(testclient, api_app):
@@ -76,13 +92,20 @@ async def test_put_project__success(testclient, api_app):
     req = {
         "name": "b",
         "manager_id": "56986558-57f9-4117-a26f-05fa0cffe8ee",
-        "status": 1,
     }
-    res = await testclient.put(
-        f"/api/v1/projects/{project_key}?name={req['name']}&manager_id={req['manager_id']}&status_id={req['status']}"
-    )
+    res = await testclient.put(f"/api/v1/projects/{project_key}", json=req)
     assert res.status_code == 200
-    assert res.json() == {"message": "UPDATE 1"}
+    assert res.json() == {
+        "message": "updated",
+        "new_data": {
+            "project_key": "g-1",
+            "name": "b",
+            "manager_id": {
+                "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
+                "name": "my_name",
+            },
+        }
+    }
 
 
 async def test_delete_project__success(testclient, api_app):
@@ -90,4 +113,4 @@ async def test_delete_project__success(testclient, api_app):
     project_key = "g-1"
     res = await testclient.delete(f"/api/v1/projects/{project_key}")
     assert res.status_code == 200
-    assert res.json() == {"message": "DELETE 1"}
+    assert res.json() == {"message": "project deleted"}
