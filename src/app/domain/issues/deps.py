@@ -1,6 +1,6 @@
 from fastapi import Depends
 from typing import Annotated
-from .issues_uc import IssuesUseCase
+from .issues_uc import IssuesUseCase, ProjectNotFound, AccountNotFound, IssueNotFound
 
 from .issues_pg_repo import IssuesPgRepo
 from .config import Config, get_config
