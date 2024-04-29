@@ -42,7 +42,9 @@ async def get_issue_by_id(uc: AIssuesUC, task_id: str = Path(...)):
     return res
 
 
-@router.get("/project/{project_key}", responses={404: {"model": Error}})
+@router.get(
+    "/project/{project_key}", response_model=Issue, responses={404: {"model": Error}}
+)
 async def get_issue_by_project(uc: AIssuesUC, project_key: str = Path(...)):
     try:
         res = await uc.get_issue_by_project(project_key)
@@ -51,7 +53,7 @@ async def get_issue_by_project(uc: AIssuesUC, project_key: str = Path(...)):
     return res
 
 
-@router.put("/{task_id}", responses={404: {"model": Error}})
+@router.put("/{task_id}", response_model=UpdateIssue, responses={404: {"model": Error}})
 async def put_issue(
     uc: AIssuesUC, task_id: str = Path(...), req: CreateIssue = Body(...)
 ):
@@ -66,7 +68,9 @@ async def put_issue(
     return res
 
 
-@router.patch("/{task_id}", responses={404: {"model": Error}})
+@router.patch(
+    "/{task_id}", response_model=UpdateIssue, responses={404: {"model": Error}}
+)
 async def patch_issue(
     uc: AIssuesUC, task_id: str = Path(...), req: CreateIssue = Body(...)
 ):
