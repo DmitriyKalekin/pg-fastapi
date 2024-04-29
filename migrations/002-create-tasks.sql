@@ -10,7 +10,7 @@ CREATE TABLE tasks
     created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP (6),
     updated_at  TIMESTAMP NULL,
     status_id   INT NOT NULL DEFAULT 1,
-    task_id     INT NOT NULL,
+    task_id     BIGINT NOT NULL,
     project_key VARCHAR(255) NOT NULL,
     project_id  INT NOT NULL,
 

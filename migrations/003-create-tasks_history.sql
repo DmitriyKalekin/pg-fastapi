@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS tasks_history;
 CREATE TABLE tasks_history 
 (
     id          BIGSERIAL PRIMARY KEY,
-    task_id     INT NOT NULL, -- think about entering data
+    task_id     BIGINT NOT NULL, -- think about entering data
     project_key VARCHAR(255) NOT NULL -- think about entering data
 );
 --
