@@ -42,6 +42,7 @@ async def test_patch_project__key_not_found(testclient, api_app):
     assert res.status_code == 404
     assert res.json() == {"error": "key not found"}
 
+
 async def test_patch_project__uid_not_found(testclient, api_app):
     api_app.dependency_overrides[deps_pg] = deps_pg_override__error
     project_key = "g-1"
@@ -55,7 +56,6 @@ async def test_patch_project__uid_not_found(testclient, api_app):
     assert res.json() == {"error": "uid not found"}
 
 
-
 async def test_put_project__key_not_found(testclient, api_app):
     api_app.dependency_overrides[deps_pg] = deps_pg_override__error
     project_key = "123"
@@ -67,6 +67,7 @@ async def test_put_project__key_not_found(testclient, api_app):
     res = await testclient.put(f"/api/v1/projects/{project_key}", json=req)
     assert res.status_code == 404
     assert res.json() == {"error": "key not found"}
+
 
 async def test_put_project__uid_not_found(testclient, api_app):
     api_app.dependency_overrides[deps_pg] = deps_pg_override__error

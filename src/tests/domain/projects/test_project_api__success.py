@@ -43,10 +43,7 @@ async def test_get_all_project__success(testclient, api_app):
         }
     ]
     assert res.status_code == 200
-    assert res.json() == {
-        "count": len(req),
-        "items": req
-    }
+    assert res.json() == {"count": len(req), "items": req}
 
 
 async def test_get_project__success(testclient, api_app):
@@ -82,7 +79,7 @@ async def test_patch_project__success(testclient, api_app):
                 "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
                 "name": "my_name",
             },
-        }
+        },
     }
 
 
@@ -104,7 +101,7 @@ async def test_put_project__success(testclient, api_app):
                 "uid": "56986558-57f9-4117-a26f-05fa0cffe8ee",
                 "name": "my_name",
             },
-        }
+        },
     }
 
 

@@ -4,7 +4,8 @@ from uuid import uuid4
 import asyncpg
 from contextlib import asynccontextmanager
 
-class IssuesPgRepo(IRepIssue): # pragma: no cover
+
+class IssuesPgRepo(IRepIssue):  # pragma: no cover
     def __init__(self, cfg: BaseSettings):
         self.cfg = cfg
         self.dsn = "postgresql://{usr}:{pwd}@{host}:{port}/{db}".format(
@@ -25,7 +26,7 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
             )
         yield self._pool
 
-    async def create_issue(self, req: tuple) -> list: 
+    async def create_issue(self, req: tuple) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -71,7 +72,7 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
             """
 
             try:
-                res = await conn.fetchval(q, *req, int(uuid4())>>92)
+                res = await conn.fetchval(q, *req, int(uuid4()) >> 92)
                 if res != None:
                     await conn.execute(his, res[4])
             except asyncpg.exceptions.NotNullViolationError:
@@ -79,8 +80,8 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
             except asyncpg.exceptions.ForeignKeyViolationError:
                 raise KeyError("account not found")
             return res
-        
-    async def get_all_issues(self) -> list[dict]: 
+
+    async def get_all_issues(self) -> list[dict]:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -99,8 +100,8 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
             """
             res = await conn.fetch(q)
             return res
-        
-    async def get_issue_by_id(self, req: int) -> list: 
+
+    async def get_issue_by_id(self, req: int) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -122,8 +123,8 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
             if res == None:
                 raise KeyError("issue not found")
             return res
-        
-    async def get_issue_by_project(self, req: str) -> list: 
+
+    async def get_issue_by_project(self, req: str) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -138,8 +139,7 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
                 raise KeyError("project not found")
             return await self.get_issue_by_id(res)
 
-
-    async def update_issue(self, task_id: int, req: tuple) -> list: 
+    async def update_issue(self, task_id: int, req: tuple) -> list:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """
@@ -187,7 +187,7 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
                 FROM tasks
                 WHERE task_id=$1
             """
-        
+
             try:
                 res = await conn.fetchval(q, *req, task_id)
                 if res == None:
@@ -196,13 +196,12 @@ class IssuesPgRepo(IRepIssue): # pragma: no cover
                 raise ValueError("project not found")
             except asyncpg.exceptions.ForeignKeyViolationError:
                 raise KeyError("account not found")
-            
+
             if res != None:
                 await conn.execute(his, task_id)
             return res
 
-
-    async def delete_issue(self, req: int) -> dict: 
+    async def delete_issue(self, req: int) -> dict:
         async with self.pool as p, p.acquire() as cn:
             conn: asyncpg.Connection = cn
             q = """

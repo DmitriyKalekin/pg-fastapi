@@ -1,18 +1,15 @@
 from pydantic import BaseModel, UUID4, ConfigDict
 
-def convert_uuid_to_str(uuid) -> str: # pragma: no cover
+
+def convert_uuid_to_str(uuid) -> str:  # pragma: no cover
     return str(uuid)
+
 
 class Error(BaseModel):
     error: str
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "error": "some error"
-            }
-        }
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {"error": "some error"}})
+
 
 class Project(BaseModel):
     name: str
@@ -27,6 +24,7 @@ class Project(BaseModel):
         }
     )
 
+
 class Account(BaseModel):
     uid: UUID4
     name: str
@@ -40,20 +38,16 @@ class Account(BaseModel):
                 "uid": "dcaf7bbd-35f6-4ea6-bd2a-c1be8d8ab218",
                 "name": "username",
             }
-        }
+        },
     )
+
 
 class Status(BaseModel):
     id: int
     status: str
 
     model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "id": 1,
-                "status": "TODO"
-            }
-        }
+        json_schema_extra={"example": {"id": 1, "status": "TODO"}}
     )
 
 
@@ -70,14 +64,15 @@ class CreateIssue(BaseModel):
         },
         json_schema_extra={
             "example": {
-                "summary": "title", 
+                "summary": "title",
                 "description": "description" or "",
                 "assignee_id": "dcaf7bbd-35f6-4ea6-bd2a-c1be8d8ab218",
                 "status_id": 1,
                 "project_key": "name-num",
             }
-        }
+        },
     )
+
 
 class Issue(BaseModel):
     summary: str
@@ -86,7 +81,7 @@ class Issue(BaseModel):
     status: Status = {}
     task_id: int
     project: Project = {}
-    
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -94,20 +89,15 @@ class Issue(BaseModel):
                 "description": "description" or "",
                 "assignee": {
                     "uid": "dcaf7bbd-35f6-4ea6-bd2a-c1be8d8ab218",
-                    "name": "username"
+                    "name": "username",
                 },
-                "status": {
-                    "id": 1,
-                    "status": "TODO"
-                },
+                "status": {"id": 1, "status": "TODO"},
                 "task_id": 1,
-                "project": {
-                    "project_key": "name-num",
-                    "name": "name"
-                }
+                "project": {"project_key": "name-num", "name": "name"},
             }
         }
     )
+
 
 class IssueList(BaseModel):
     count: int
@@ -123,22 +113,17 @@ class IssueList(BaseModel):
                         "description": "description" or "",
                         "assignee": {
                             "uid": "dcaf7bbd-35f6-4ea6-bd2a-c1be8d8ab218",
-                            "name": "username"
+                            "name": "username",
                         },
-                        "status": {
-                            "id": 1,
-                            "status": "TODO"
-                        },
+                        "status": {"id": 1, "status": "TODO"},
                         "task_id": 1,
-                        "project": {
-                            "project_key": "name-num",
-                            "name": "name"
-                        }
+                        "project": {"project_key": "name-num", "name": "name"},
                     }
-                ]
+                ],
             }
         }
     )
+
 
 class UpdateIssue(BaseModel):
     message: str
@@ -153,21 +138,16 @@ class UpdateIssue(BaseModel):
                     "description": "description" or "",
                     "assignee": {
                         "uid": "dcaf7bbd-35f6-4ea6-bd2a-c1be8d8ab218",
-                        "name": "username"
+                        "name": "username",
                     },
-                    "status": {
-                        "id": 1,
-                        "status": "TODO"
-                    },
+                    "status": {"id": 1, "status": "TODO"},
                     "task_id": 1,
-                    "project": {
-                        "project_key": "name-num",
-                        "name": "name"
-                    }
-                }
+                    "project": {"project_key": "name-num", "name": "name"},
+                },
             }
         }
     )
+
 
 class DeleteIssue(BaseModel):
     message: str

@@ -1,18 +1,12 @@
 from app.domain.projects.project_irep import IRepProject
 
+
 class MockRepo(IRepProject):
     async def create_project(self, req: tuple) -> list:
         return ["56986558-57f9-4117-a26f-05fa0cffe8ee", "my_name"]
 
     async def get_all_project(self) -> dict:
-        return [
-            [
-                "g-1",
-                "g",
-                "56986558-57f9-4117-a26f-05fa0cffe8ee",
-                "my_name"
-            ]
-        ]
+        return [["g-1", "g", "56986558-57f9-4117-a26f-05fa0cffe8ee", "my_name"]]
 
     async def get_project(self, _: str) -> list:
         return [
@@ -27,8 +21,6 @@ class MockRepo(IRepProject):
 
     async def delete_project(self, _: str) -> dict:
         return {"message": "project deleted"}
-
-    
 
 
 class MockRepoError(IRepProject):
