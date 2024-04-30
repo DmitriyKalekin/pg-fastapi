@@ -1,6 +1,11 @@
 from fastapi import Depends
 from typing import Annotated
-from .account_uc import AccountUseCase, EmailBusyException
+from .account_uc import (
+    AccountUseCase,
+    EmailBusyException,
+    InvalidUidException,
+    AccountNotFoundException,
+)
 from .account_pg_repo import AccountPgRepo
 from .config import Config, get_config
 
