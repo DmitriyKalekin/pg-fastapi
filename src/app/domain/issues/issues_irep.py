@@ -1,4 +1,6 @@
-class IRepIssue:  # pragma: no cover
+from typing import Protocol
+
+class IRepIssue(Protocol):  # pragma: no cover
     async def create_issue(self, req: dict) -> dict:
         raise NotImplementedError
 

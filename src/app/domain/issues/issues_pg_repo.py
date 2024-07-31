@@ -1,11 +1,10 @@
-from .issues_irep import IRepIssue
 from pydantic_settings import BaseSettings
 from uuid import uuid4
 import asyncpg
 from contextlib import asynccontextmanager
 
 
-class IssuesPgRepo(IRepIssue):  # pragma: no cover
+class IssuesPgRepo:  # pragma: no cover
     def __init__(self, cfg: BaseSettings):
         self.cfg = cfg
         self.dsn = "postgresql://{usr}:{pwd}@{host}:{port}/{db}".format(
@@ -201,26 +200,26 @@ class IssuesPgRepo(IRepIssue):  # pragma: no cover
                 await conn.execute(his, task_id)
             return res
 
-    async def delete_issue(self, req: int) -> dict:
-        async with self.pool as p, p.acquire() as cn:
-            conn: asyncpg.Connection = cn
-            q = """
-                DELETE FROM tasks
-                WHERE id = (
-                    SELECT id
-                    FROM tasks
-                    WHERE task_id=$1
-                    LIMIT 1
-                )
-            """
-            his = """
-                DELETE FROM tasks_history
-                WHERE task_id=$1
-            """
-            res = await conn.execute(q, req)
+    # async def delete_issue(self, req: int) -> dict:
+    #     async with self.pool as p, p.acquire() as cn:
+    #         conn: asyncpg.Connection = cn
+    #         q = """
+    #             DELETE FROM tasks
+    #             WHERE id = (
+    #                 SELECT id
+    #                 FROM tasks
+    #                 WHERE task_id=$1
+    #                 LIMIT 1
+    #             )
+    #         """
+    #         his = """
+    #             DELETE FROM tasks_history
+    #             WHERE task_id=$1
+    #         """
+    #         res = await conn.execute(q, req)
 
-            if res == "DELETE 0":
-                raise KeyError("issue not found")
-            else:
-                await conn.execute(his, req)
-                return {"message": "issue deleted"}
+    #         if res == "DELETE 0":
+    #             raise KeyError("issue not found")
+    #         else:
+    #             await conn.execute(his, req)
+    #             return {"message": "issue deleted"}
